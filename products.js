@@ -1,19 +1,27 @@
 "use strict";
 //import { fetchData } from "./fetch.js";
 let url = 'https://fakestoreapi.com/products/';
-let shop = [];
+let productsInCart;
+if (localStorage.getItem("cart") === null) {
+  productsInCart = [];
+  console.log(productsInCart);
+}else{
+  productsInCart = JSON.parse(localStorage.getItem("cart"));
+  console.log(productsInCart);
+  //Rendera dessa produkter i Cart utifrån productsInCart med fetch.
+}
 getProducts();
 
 async function getProducts() {
-    let response = await fetch(url);
-    let data = await response.json();
-    data.forEach(renderProductCard);
+  let response = await fetch(url);
+  let data = await response.json();
+  data.forEach(renderProductCard);
 }
 
 function renderProductCard(element) {
-    const card = document.createElement('div');
-    card.classList.add('col-sm-11', 'col-md-6', 'col-lg-3', 'col-xl-3', 'col-xxl-2', 'mb-4', 'card-container');
-    card.innerHTML = `
+  const card = document.createElement('div');
+  card.classList.add('col-sm-11', 'col-md-6', 'col-lg-3', 'col-xl-3', 'col-xxl-2', 'mb-4', 'card-container');
+  card.innerHTML = `
             <div class="card card-hover" style="border-radius: 15px;">
               <div class="text-center" style="height: 200px">
                 <img src="${element.image}" style="border-top-left-radius: 15px; border-top-right-radius: 15px; max-height: 200px;" class="img-fluid" alt="${element.title}"/>
@@ -46,46 +54,53 @@ function renderProductCard(element) {
             <hr class="my-0" />
               <div class="card-body">
                 <div class="d-flex justify-content-center align-items-center pb-2 mb-1">
-                  <button class="btn btn-primary">Add to cart</button>
+                  <button class="btn btn-primary btn_addToCart">Add to cart</button>
                 </div>
               </div>
             </div>
       `;
-    document.querySelector('.row').appendChild(card);
+  document.querySelector('.row').appendChild(card);
 
-    card.querySelector('.btn').addEventListener('click', () => {
-        renderInDropdown(element);
-        //addToCheckout(element.id, 1);
-    });
+  card.querySelector(".btn_addToCart").addEventListener("click", () => {
+    addToCart(element);
+    addToLocalStorage(element.id, 1);
+  })
+  /*card.querySelector('.btn').addEventListener('click', () => {
+      renderInDropdown(element);
+      addToLocalStorage(element.id, 1);
+  });*/
 
-    const descriptionContainerElement = card.querySelector('.description-container');
+  const descriptionContainerElement = card.querySelector('.description-container');
+  //adds the class 'has-more-text' to the description container if the description is longer than the container and shows a gradient at the bottom when it's not expanded
+  if (descriptionContainerElement.scrollHeight > descriptionContainerElement.clientHeight) {
+    descriptionContainerElement.classList.add('has-more-text');
+  }
 
+  //made the description expand on hover and collapse on mouseleave of the entire card
+  descriptionContainerElement.addEventListener('mouseenter', () => {
+    descriptionContainerElement.classList.add('expanded');
+  });
 
-    //adds the class 'has-more-text' to the description container if the description is longer than the container and shows a gradient at the bottom when it's not expanded
-    if (descriptionContainerElement.scrollHeight > descriptionContainerElement.clientHeight) {
-        descriptionContainerElement.classList.add('has-more-text');
-    }
-
-    //made the description expand on hover and collapse on mouseleave of the entire card
-    descriptionContainerElement.addEventListener('mouseenter', () => {
-        descriptionContainerElement.classList.add('expanded');
-    });
-
-    card.addEventListener('mouseleave', () => {
-        descriptionContainerElement.classList.remove('expanded');
-    });
+  card.addEventListener('mouseleave', () => {
+    descriptionContainerElement.classList.remove('expanded');
+  });
 }
 
 
-//add to checkout function
-function addToCheckout(id, quantity) {
-    let item = [id, quantity]
-    shop.push(item);
-    localStorage.setItem('shop', JSON.stringify(shop));
+function addToCart(element) {
+  /*document.getElementById("emptyCart").remove();
+
+  let btn_goTocheckout = document.createElement('button');
+  btn_goTocheckout.textContent = "Checkout";
+  btn_goTocheckout.classList.add('btn');
+  btn_goTocheckout.classList.add('btn-primary');
+  btn_goTocheckout.classList.add('btn_goToCheckout');
+  document.querySelector('.dropdown-menu').appendChild(btn_goTocheckout);
+
+  document.querySelector('.btn_goToCheckout').addEventListener('click', () => {
     location.href = "checkout.html";
-}
+  });*/
 
-function renderInDropdown(element) {
   let list = document.createElement('li');
   list.classList.add('dropdown-item');
   list.classList.add('dropdown-item-container');
@@ -93,16 +108,26 @@ function renderInDropdown(element) {
       <img src="${element.image}" class="" alt="${element.title}">
       <p class="">${element.title}</p>
       <p>${element.price}</p>
-      <button class="btn btn-primary" data-bs-toggle="modal">DELETE</button>
+      <button class="btn btn-primary btn_delete" data-bs-toggle="modal">DELETE</button>
       `;
   document.querySelector('.dropdown-menu').appendChild(list);
 
-  list.querySelector('.btn').addEventListener('click', () => {
-      //ta bort från arrayen och localstorage
+  list.querySelector('.btn_delete').addEventListener('click', () => {
+    //ta bort från arrayen och localstorage
   });
-  document.getElementById("btn_checkout").addEventListener("click", goToCheckout());
+}
+
+function addToLocalStorage(id, quantity) {
+  //Om id == något id i productsInCart så öka quantity.
+  if (productsInCart.some(product => product[0] === id)) {
+    productsInCart.find(product => product[0] === id)[1] += 1;
+  } else {
+    let product = [id, quantity];
+    productsInCart.push(product);
+  }
+  localStorage.setItem('cart', JSON.stringify(productsInCart));
 }
 
 function goToCheckout(){
-  //Länk till checkout.html
+  location.href = "checkout.html";
 }
