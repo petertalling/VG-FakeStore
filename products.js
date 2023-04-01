@@ -4,12 +4,27 @@ let url = 'https://fakestoreapi.com/products/';
 let productsInCart;
 if (localStorage.getItem("cart") === null) {
   productsInCart = [];
-  console.log(productsInCart);
-}else{
+  console.log("products in cart array", productsInCart);
+} else {
   productsInCart = JSON.parse(localStorage.getItem("cart"));
   console.log(productsInCart);
   //Rendera dessa produkter i Cart utifrån productsInCart med fetch.
+  getProductsFromLocalStorage();
 }
+
+async function getProductsFromLocalStorage() {
+  let response = await fetch(url);
+  let data = await response.json();
+  data.forEach(isInLocalStorage);
+}
+
+function isInLocalStorage(element) {
+  if (productsInCart.some(product => product[0] === element.id)) {
+    addToCart(element);
+  }
+}
+
+
 getProducts();
 
 async function getProducts() {
@@ -62,8 +77,13 @@ function renderProductCard(element) {
   document.querySelector('.row').appendChild(card);
 
   card.querySelector(".btn_addToCart").addEventListener("click", () => {
-    addToCart(element);
-    addToLocalStorage(element.id, 1);
+    if (productsInCart.some(product => product[0] === element.id)) {
+      addToLocalStorage(element.id, 1);
+      updateQuantity(element);
+    } else {
+      addToLocalStorage(element.id, 1);
+      addToCart(element);
+    }
   })
   /*card.querySelector('.btn').addEventListener('click', () => {
       renderInDropdown(element);
@@ -87,6 +107,14 @@ function renderProductCard(element) {
 }
 
 
+function getQuantity(element) {
+  return productsInCart.find(product => product[0] === element.id)[1];
+}
+
+function updateQuantity(element) {
+  document.getElementById("quantity_" + element.id).textContent = "Quantity: " + getQuantity(element);
+}
+
 function addToCart(element) {
   /*document.getElementById("emptyCart").remove();
 
@@ -96,24 +124,40 @@ function addToCart(element) {
   btn_goTocheckout.classList.add('btn-primary');
   btn_goTocheckout.classList.add('btn_goToCheckout');
   document.querySelector('.dropdown-menu').appendChild(btn_goTocheckout);
-
   document.querySelector('.btn_goToCheckout').addEventListener('click', () => {
     location.href = "checkout.html";
   });*/
+
+  //Om produkten redan finns i productsInCart rendera inte
 
   let list = document.createElement('li');
   list.classList.add('dropdown-item');
   list.classList.add('dropdown-item-container');
   list.innerHTML = `
-      <img src="${element.image}" class="" alt="${element.title}">
-      <p class="">${element.title}</p>
-      <p>${element.price}</p>
+      
+      <p>${element.title}</p>
+      <p>$${element.price}</p>
+      <p id="quantity_${element.id}">Quantity: ${getQuantity(element)}</p>
+
       <button class="btn btn-primary btn_delete" data-bs-toggle="modal">DELETE</button>
+      <button class="btn btn-primary btn_plus" data-bs-toggle="modal">+</button>
+      <button class="btn btn-primary btn_minus" data-bs-toggle="modal">-</button>
+
       `;
   document.querySelector('.dropdown-menu').appendChild(list);
 
+  list.querySelector('.btn_plus').addEventListener('click', () => {
+    addToLocalStorage(element.id, 1);
+    updateQuantity(element);
+  })
+
+  list.querySelector('.btn_minus').addEventListener('click', () => {
+    subtractFromLocalStorage(element.id, 1);
+    updateQuantity(element);
+  })
+
   list.querySelector('.btn_delete').addEventListener('click', () => {
-    //ta bort från arrayen och localstorage
+    deleteProduct(element);
   });
 }
 
@@ -128,6 +172,24 @@ function addToLocalStorage(id, quantity) {
   localStorage.setItem('cart', JSON.stringify(productsInCart));
 }
 
-function goToCheckout(){
+function subtractFromLocalStorage(id, quantity) {
+  if (quantity === 0) {
+    //deleteFromCart();
+  }
+
+  if (quantity > 0) {
+    if (productsInCart.some(product => product[0] === id)) {
+      productsInCart.find(product => product[0] === id)[1] -= 1;
+      localStorage.setItem('cart', JSON.stringify(productsInCart));
+    }
+  }
+}
+
+function deleteProduct(element) {
+
+}
+
+
+function goToCheckout() {
   location.href = "checkout.html";
 }
