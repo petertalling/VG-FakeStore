@@ -6,7 +6,6 @@ if (localStorage.getItem("cart") === null) {
   productsInCart = [];
 } else {
   productsInCart = JSON.parse(localStorage.getItem("cart"));
-  console.log(productsInCart);
   //Rendera dessa produkter i Cart utifrån productsInCart med fetch.
   getProductsFromLocalStorage();
   totalPrice();
@@ -136,7 +135,7 @@ function addToCart(element) {
   list.classList.add('dropdown-item');
   list.classList.add('dropdown-item-container');
   list.innerHTML = `
-      
+      <hr>
       <p>${element.title}</p>
       <p>$${element.price}</p>
       <p id="quantity_${element.id}">Quantity: ${getQuantity(element)}</p>
@@ -148,16 +147,16 @@ function addToCart(element) {
       `;
   document.querySelector('.dropdown-menu').appendChild(list);
 
-  list.querySelector('.btn_plus').addEventListener('click', () => {
+  list.querySelector('.btn_plus').addEventListener('click', ()=> {
     addToLocalStorage(element.id, 1, element.price);
     updateQuantity(element);
   })
 
-  list.querySelector('.btn_minus').addEventListener('click', () => {
+  list.querySelector('.btn_minus').addEventListener('click', ()=> {
     subtractFromLocalStorage(element);
   })
 
-  list.querySelector('.btn_delete').addEventListener('click', () => {
+  list.querySelector('.btn_delete').addEventListener('click', ()=> {
     deleteProduct(element);
   });
 }
@@ -193,7 +192,6 @@ function deleteProduct(element) {
   for (let i = 0; i < productsInCart.length; i++) {
     if (productsInCart[i][0] === element.id) {
       productsInCart.splice(i, 1);
-      console.log(productsInCart);
     }
   }
   //ta bort ls och lägg till nya productsInCart
@@ -215,3 +213,14 @@ function totalPrice() {
 function goToCheckout() {
   location.href = "checkout.html";
 }
+
+function emptyCart() {
+  //ta bort divar
+  productsInCart.forEach(product => document.getElementById("cartItem_" + product[0]).remove());
+  //rensa local storage
+  localStorage.clear;
+  //ta bort productsInCart
+  productsInCart = [];
+  totalPrice();
+}
+
