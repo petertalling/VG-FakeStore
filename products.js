@@ -135,28 +135,31 @@ function addToCart(element) {
   list.classList.add('dropdown-item');
   list.classList.add('dropdown-item-container');
   list.innerHTML = `
-      <hr>
+    <hr>
+    <div class="col-md-10">
+      <div class="text-center" style="height: 50px">
+        <img src="${element.image}" style="border-top-left-radius: 15px; border-top-right-radius: 15px; max-height: 50px;" class="img-fluid" alt="${element.title}"/>
+      </div>
       <p>${element.title}</p>
       <p>$${element.price}</p>
       <p id="quantity_${element.id}">Quantity: ${getQuantity(element)}</p>
-
       <button class="btn btn-primary btn_delete">DELETE</button>
       <button class="btn btn-primary btn_plus">+</button>
       <button class="btn btn-primary btn_minus">-</button>
-
+    </div>
       `;
   document.querySelector('.dropdown-menu').appendChild(list);
 
-  list.querySelector('.btn_plus').addEventListener('click', ()=> {
+  list.querySelector('.btn_plus').addEventListener('click', () => {
     addToLocalStorage(element.id, 1, element.price);
     updateQuantity(element);
   })
 
-  list.querySelector('.btn_minus').addEventListener('click', ()=> {
+  list.querySelector('.btn_minus').addEventListener('click', () => {
     subtractFromLocalStorage(element);
   })
 
-  list.querySelector('.btn_delete').addEventListener('click', ()=> {
+  list.querySelector('.btn_delete').addEventListener('click', () => {
     deleteProduct(element);
   });
 }
@@ -205,7 +208,7 @@ function deleteProduct(element) {
 function totalPrice() {
   let total = 0;
   productsInCart.forEach(product => total += product[1] * product[2]);
-  document.getElementById("totalPrice").textContent = "Total: $" + total;
+  document.getElementById("totalPrice").textContent = "Total: $" + total.toFixed(2);
   document.getElementById("totalPrice").style.fontWeight = "bold";
 }
 
@@ -218,9 +221,8 @@ function emptyCart() {
   //ta bort divar
   productsInCart.forEach(product => document.getElementById("cartItem_" + product[0]).remove());
   //rensa local storage
-  localStorage.clear;
+  localStorage.clear();
   //ta bort productsInCart
   productsInCart = [];
   totalPrice();
 }
-
