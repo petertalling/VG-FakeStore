@@ -7,7 +7,7 @@ const productsInCart = JSON.parse(localStorage.getItem('cart'))
 if (productsInCart == null || customer == null) {
     
     if (productsInCart == null) {
-        document.getElementById('OrderSummarymessage').innerHTML = `Your cart is empty, please go back to the shop and add some items to your cart.`;
+        document.getElementById('orderSummary').innerHTML = `Your cart is empty, please go back to the shop and add some items to your cart.`;
     }
     if (customer == null) {
         document.getElementById('customer').innerHTML = `Please fill in your information to complete your order.`;
@@ -66,7 +66,7 @@ function getQuantity(element) {
         </div>
     </div>
 `;
-        document.getElementById('item').appendChild(confirmationCard);
+        document.getElementById('orderSummary').appendChild(confirmationCard);
     }
 
 
