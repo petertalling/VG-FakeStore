@@ -2,12 +2,12 @@
 
 //const priceLocation = document.getElementById('totalprice');
 let url = 'https://fakestoreapi.com/products/';
-let productsInCart;
-if (localStorage.getItem("cart") === null) {
+let productsInCart = JSON.parse(localStorage.getItem("cart"));
+if (localStorage.getItem("cart") === null || productsInCart.length === 0) {
     document.getElementById('checkoutMessage').innerHTML = `Your cart is empty, please go back to the shop and add some items to your cart.`;
-    productsInCart = [];
+    //productsInCart = [];
 } else {
-    productsInCart = JSON.parse(localStorage.getItem("cart"));
+    //productsInCart = JSON.parse(localStorage.getItem("cart"));
     //Rendera dessa produkter i Cart utifrån productsInCart med fetch.
     getProductsFromLocalStorage();
     //totalPrice();
