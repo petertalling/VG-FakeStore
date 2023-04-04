@@ -89,4 +89,5 @@ function getQuantity(element) {
     `;
 
         document.getElementById('customer').appendChild(card);
+        sessionStorage.clear();
     }
