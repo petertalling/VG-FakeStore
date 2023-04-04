@@ -1,7 +1,7 @@
 "use strict";
-//import { fetchData } from "./fetch.js";
 let url = 'https://fakestoreapi.com/products/';
 let productsInCart;
+
 if (localStorage.getItem("cart") === null) {
   productsInCart = [];
 } else {
@@ -9,6 +9,14 @@ if (localStorage.getItem("cart") === null) {
   //Rendera dessa produkter i Cart utifrån productsInCart med fetch.
   getProductsFromLocalStorage();
   totalPrice();
+}
+
+getProducts();
+
+async function getProducts() {
+  let response = await fetch(url);
+  let data = await response.json();
+  data.forEach(renderProductCard);
 }
 
 async function getProductsFromLocalStorage() {
@@ -21,15 +29,6 @@ function isInLocalStorage(element) {
   if (productsInCart.some(product => product[0] === element.id)) {
     addToCart(element);
   }
-}
-
-
-getProducts();
-
-async function getProducts() {
-  let response = await fetch(url);
-  let data = await response.json();
-  data.forEach(renderProductCard);
 }
 
 function renderProductCard(element) {
@@ -85,10 +84,6 @@ function renderProductCard(element) {
     }
     totalPrice();
   })
-  /*card.querySelector('.btn').addEventListener('click', () => {
-      renderInDropdown(element);
-      addToLocalStorage(element.id, 1);
-  });*/
 
   const descriptionContainerElement = card.querySelector('.description-container');
   //adds the class 'has-more-text' to the description container if the description is longer than the container and shows a gradient at the bottom when it's not expanded
@@ -106,30 +101,8 @@ function renderProductCard(element) {
   });
 }
 
-
-function getQuantity(element) {
-  return productsInCart.find(product => product[0] === element.id)[1];
-}
-
-function updateQuantity(element) {
-  document.getElementById("quantity_" + element.id).textContent = "Quantity: " + getQuantity(element);
-}
-
 function addToCart(element) {
-  /*document.getElementById("emptyCart").remove();
-
-  let btn_goTocheckout = document.createElement('button');
-  btn_goTocheckout.textContent = "Checkout";
-  btn_goTocheckout.classList.add('btn');
-  btn_goTocheckout.classList.add('btn-primary');
-  btn_goTocheckout.classList.add('btn_goToCheckout');
-  document.querySelector('.dropdown-menu').appendChild(btn_goTocheckout);
-  document.querySelector('.btn_goToCheckout').addEventListener('click', () => {
-    location.href = "checkout.html";
-  });*/
-
   //Om produkten redan finns i productsInCart rendera inte
-
   let list = document.createElement('li');
   list.setAttribute("id", "cartItem_" + element.id);
   list.classList.add('dropdown-item');
@@ -212,6 +185,13 @@ function totalPrice() {
   document.getElementById("totalPrice").style.fontWeight = "bold";
 }
 
+function getQuantity(element) {
+  return productsInCart.find(product => product[0] === element.id)[1];
+}
+
+function updateQuantity(element) {
+  document.getElementById("quantity_" + element.id).textContent = "Quantity: " + getQuantity(element);
+}
 
 function goToCheckout() {
   location.href = "checkout.html";

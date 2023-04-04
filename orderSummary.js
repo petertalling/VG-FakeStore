@@ -1,11 +1,10 @@
 "use strict";
-//import { fetchData } from "./fetch.js";
 let url = 'https://fakestoreapi.com/products/';
 const customer = JSON.parse(sessionStorage.getItem('customer'));
 const productsInCart = JSON.parse(localStorage.getItem('cart'))
 
 if (productsInCart == null || customer == null) {
-    
+
     if (productsInCart == null) {
         document.getElementById('orderSummary').innerHTML = `Your cart is empty, please go back to the shop and add some items to your cart.`;
     }
@@ -14,10 +13,7 @@ if (productsInCart == null || customer == null) {
     }
 } else {
     getProductsFromLocalStorage();
-    
 }
-
-
 
 async function getProductsFromLocalStorage() {
     let response = await fetch(url);
@@ -35,13 +31,12 @@ function getQuantity(element) {
     return productsInCart.find(product => product[0] === element.id)[1];
 }
 
-    //fetchData(renderConfirmationCard, shop);
-    renderCustomer(customer);
+renderCustomer(customer);
 
-    function renderConfirmationCard(element, quantity) {
-        const confirmationCard = document.createElement('div');
-        confirmationCard.classList.add('col-sm-11', 'col-md-11', 'col-lg-7', 'mb-4');
-        confirmationCard.innerHTML = `
+function renderConfirmationCard(element, quantity) {
+    const confirmationCard = document.createElement('div');
+    confirmationCard.classList.add('col-sm-11', 'col-md-11', 'col-lg-7', 'mb-4');
+    confirmationCard.innerHTML = `
     <div class="card" style="border-radius: 15px;">
         <div class="row g-0">
             <div class="col-md-2">
@@ -66,15 +61,13 @@ function getQuantity(element) {
         </div>
     </div>
 `;
-        document.getElementById('orderSummary').appendChild(confirmationCard);
-    }
+    document.getElementById('orderSummary').appendChild(confirmationCard);
+}
 
-
-
-    function renderCustomer(customer) {
-        let card = document.createElement('div');
-        card.classList.add('col-sm-11', 'col-md-11', 'col-lg-7', 'mb-4');
-        card.innerHTML = `
+function renderCustomer(customer) {
+    let card = document.createElement('div');
+    card.classList.add('col-sm-11', 'col-md-11', 'col-lg-7', 'mb-4');
+    card.innerHTML = `
             <div class="card-body">
                 <div class="col-12 d-flex justify-content-center">
                     <div>
@@ -88,6 +81,6 @@ function getQuantity(element) {
             </div>
     `;
 
-        document.getElementById('customer').appendChild(card);
-        sessionStorage.clear();
-    }
+    document.getElementById('customer').appendChild(card);
+    sessionStorage.clear();
+}

@@ -1,8 +1,7 @@
 "use strict";
-
-//const priceLocation = document.getElementById('totalprice');
 let url = 'https://fakestoreapi.com/products/';
 let productsInCart = JSON.parse(localStorage.getItem("cart"));
+
 if (localStorage.getItem("cart") === null || productsInCart.length === 0) {
     document.getElementById('checkoutMessage').innerHTML = `Your cart is empty, please go back to the shop and add some items to your cart.`;
     //productsInCart = [];
@@ -28,7 +27,6 @@ function isInLocalStorage(element) {
 function getQuantity(element) {
     return productsInCart.find(product => product[0] === element.id)[1];
 }
-
 
 function renderCheckoutCard(element, quantity) {
     const checkoutCard = document.createElement('div');
